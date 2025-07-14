@@ -1,4 +1,4 @@
-name: Build APK 
+name: Build APK
 
 on:
   push:
@@ -59,7 +59,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: index-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        path: build/app/outputs/apk/release/app-release.apk
 
     - name: Create Release
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/modernize-app-to-index'
@@ -87,7 +87,7 @@ jobs:
           - Updated all dependencies to latest versions
           
           **Download the APK below and install on your Android device.**
-        files: build/app/outputs/flutter-apk/app-release.apk
+        files: build/app/outputs/apk/release/app-release.apk
         draft: false
         prerelease: false
       env:
