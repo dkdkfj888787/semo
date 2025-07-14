@@ -110,8 +110,6 @@ class _MovieState extends State<Movie> {
   }
 
   Future<void> isFavorite() async {
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       List<int> favoriteMovies = ((data['movies'] ?? []) as List<dynamic>).cast<int>();
 
@@ -139,10 +137,8 @@ class _MovieState extends State<Movie> {
     List<int> favoriteMovies = _favoriteMovies;
     favoriteMovies.add(_movie!.id);
 
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
     await user.set({
       'movies': favoriteMovies,
-    }, SetOptions(merge: true));
 
     setState(() {
       _favoriteMovies = favoriteMovies;
@@ -154,10 +150,8 @@ class _MovieState extends State<Movie> {
     List<int> favoriteMovies = _favoriteMovies;
     favoriteMovies.remove(_movie!.id);
 
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
     await user.set({
       'movies': favoriteMovies,
-    }, SetOptions(merge: true));
 
     setState(() {
       _favoriteMovies = favoriteMovies;
@@ -166,8 +160,6 @@ class _MovieState extends State<Movie> {
   }
 
   Future<void> isRecentlyWatched() async {
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       Map<String, Map<String, dynamic>> recentlyWatched = ((data['movies'] ?? {}) as Map<dynamic, dynamic>).map<String, Map<String, dynamic>>((key, value) {
         return MapEntry(key, Map<String, dynamic>.from(value));

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:index/models/server.dart';
 import 'package:index/screens/company_info.dart';
 import 'package:index/screens/open_source_libraries.dart';
 import 'package:index/screens/subtitles_preferences.dart';
-import 'package:index/utils/db_names.dart';
+
 import 'package:index/utils/extractor.dart';
 import 'package:index/utils/language_manager.dart';
 import 'package:index/utils/preferences.dart';

@@ -19,4 +19,7 @@ class ApiConfig {
     'Api-Key': subdlApiKey,
     'Content-Type': 'application/json',
   };
+  
+  // Getter for subdl API key (for backward compatibility)
+  static String get subdl => subdlApiKey;
 }

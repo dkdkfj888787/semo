@@ -177,8 +177,6 @@ class _TvShowsState extends State<TvShows> {
   }
 
   Future<void> getRecentlyWatched() async {
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       Map<String, Map<String, dynamic>> rawRecentlyWatched = ((data['tv_shows'] ?? {}) as Map<dynamic, dynamic>).map<String, Map<String, dynamic>>((key, value) {
         return MapEntry(key, Map<String, dynamic>.from(value));
@@ -314,10 +312,8 @@ class _TvShowsState extends State<TvShows> {
     Map<String, Map<String, dynamic>> rawRecentlyWatched = _rawRecentlyWatched!;
     rawRecentlyWatched['${tvShow.id}']!['visibleInMenu'] = false;
 
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
     await user.set({
       'tv_shows': rawRecentlyWatched,
-    }, SetOptions(mergeFields: ['tv_shows']));
 
     setState(() {
       _recentlyWatched.remove(tvShow);

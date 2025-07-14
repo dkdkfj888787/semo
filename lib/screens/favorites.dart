@@ -59,26 +59,10 @@ class _FavoritesState extends State<Favorites> {
 
   Future<void> getFavorites() async {
     _spinner!.show();
-
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
-      Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
-      List<int> rawFavorites = ((data[_pageType == PageType.movies ? 'movies' : 'tv_shows'] ?? []) as List<dynamic>).cast<int>();
-      setState(() => _rawFavorites = rawFavorites);
-      for (int id in rawFavorites) getFavoriteDetails(id);
-    }, onError: (e) {
-      print("Error getting favorites: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to get favorites',
-            style: Theme.of(context).textTheme.displayMedium,
-          ),
-          backgroundColor: Theme.of(context).cardColor,
-        ),
-      );
-    });
-
+    
+    // Local favorites storage - replace with your preferred storage method
+    setState(() => _rawFavorites = []);
+    
     _spinner!.dismiss();
   }
 
@@ -123,11 +107,8 @@ class _FavoritesState extends State<Favorites> {
     List<int> rawFavorites = _rawFavorites;
     rawFavorites.removeWhere((id) => id == mediaModel.id);
 
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
-    await user.set({
-      'movies': rawFavorites,
-    }, SetOptions(merge: true));
-
+    // Local storage - replace with your preferred storage method
+    
     setState(() {
       _favorites.remove(mediaModel);
       _rawFavorites = rawFavorites;

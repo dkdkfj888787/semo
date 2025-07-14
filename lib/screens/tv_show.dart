@@ -112,8 +112,6 @@ class _TvShowState extends State<TvShow> {
   }
 
   Future<void> isFavorite() async {
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       List<int> favoriteTvShows = ((data['tv_shows'] ?? []) as List<dynamic>).cast<int>();
 
@@ -141,10 +139,8 @@ class _TvShowState extends State<TvShow> {
     List<int> favoriteTvShows = _favoriteTvShows;
     favoriteTvShows.add(_tvShow!.id);
 
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
     await user.set({
       'tv_shows': favoriteTvShows,
-    }, SetOptions(merge: true));
 
     setState(() {
       _favoriteTvShows = favoriteTvShows;
@@ -156,10 +152,8 @@ class _TvShowState extends State<TvShow> {
     List<int> favoriteTvShows = _favoriteTvShows;
     favoriteTvShows.remove(_tvShow!.id);
 
-    final user = _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid);
     await user.set({
       'tv_shows': favoriteTvShows,
-    }, SetOptions(merge: true));
 
     setState(() {
       _favoriteTvShows = favoriteTvShows;
@@ -273,8 +267,6 @@ class _TvShowState extends State<TvShow> {
   Future<Map<String, Map<String, dynamic>>?> getRecentlyWatched(int seasonId) async {
     Map<String, Map<String, dynamic>>? results;
 
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       Map<String, Map<String, dynamic>> recentlyWatched = ((data['tv_shows'] ?? {}) as Map<dynamic, dynamic>).map<String, Map<String, dynamic>>((key, value) {
         return MapEntry(key, Map<String, dynamic>.from(value));
@@ -601,10 +593,8 @@ class _TvShowState extends State<TvShow> {
       };
     }
 
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
     await user.set({
       'tv_shows': recentlyWatched,
-    }, SetOptions(mergeFields: ['tv_shows']));
 
     model.TvShow updatedTvShow = _tvShow!;
     updatedTvShow.seasons!.firstWhere((s) => s.id == season.id).episodes!.firstWhere((e) => e.id == episode.id)
@@ -641,10 +631,8 @@ class _TvShowState extends State<TvShow> {
     if (episodes.isEmpty) seasons.remove('${season.id}');
     if (seasons.isEmpty) recentlyWatched.remove('${_tvShow!.id}');
 
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
     await user.set({
       'tv_shows': recentlyWatched,
-    }, SetOptions(mergeFields: ['tv_shows']));
 
     model.TvShow updatedTvShow = _tvShow!;
     updatedTvShow.seasons!.firstWhere((s) => s.id == season.id).episodes!.firstWhere((e) => e.id == episode.id)

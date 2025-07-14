@@ -85,8 +85,6 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
   }
 
   updateRecentlyWatched() async {
-    final user = _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       var recentlyWatched;
 
@@ -172,7 +170,6 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
 
       user.set({
         _pageType!.name: recentlyWatched,
-      }, SetOptions(mergeFields: [_pageType!.name]));
     }, onError: (e) => print("Error getting user: $e"));
   }
 

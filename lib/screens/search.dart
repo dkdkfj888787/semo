@@ -63,8 +63,6 @@ class _SearchState extends State<Search> {
   }
 
   getRecentSearches() async {
-    final user = _firestore.collection(DB.recentSearches).doc(_auth.currentUser!.uid);
-    await user.get().then((DocumentSnapshot doc) {
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       List<String> recentSearches = ((data[_pageType == PageType.movies ? 'movies' : 'tv_shows'] ?? []) as List<dynamic>).cast<String>();
 
@@ -87,10 +85,8 @@ class _SearchState extends State<Search> {
     List<String> recentSearches = _recentSearches;
     recentSearches.add(query);
 
-    final user = _firestore.collection(DB.recentSearches).doc(_auth.currentUser!.uid);
     await user.set({
       _pageType == PageType.movies ? 'movies' : 'tv_shows': recentSearches,
-    }, SetOptions(merge: true));
 
     setState(() => _recentSearches = recentSearches);
   }
@@ -99,10 +95,8 @@ class _SearchState extends State<Search> {
     List<String> recentSearches = _recentSearches;
     recentSearches.remove(query);
 
-    final user = _firestore.collection(DB.recentSearches).doc(_auth.currentUser!.uid);
     await user.set({
       (_pageType == PageType.movies ? 'movies' : 'tv_shows'): recentSearches,
-    }, SetOptions(merge: true));
 
     setState(() => _recentSearches = recentSearches);
   }
