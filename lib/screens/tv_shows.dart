@@ -907,4 +907,260 @@ class _TvShowsState extends State<TvShows> {
       ),
     );
   }
+
+  Widget TvShowCard(model.TvShow tvShow, {bool recentlyWatched = false}) {
+    List<String> firstAirDateContent = tvShow.firstAirDate.split('-');
+    String firstAirYear = firstAirDateContent.isNotEmpty ? firstAirDateContent[0] : '';
+
+    return Column(
+      children: [
+        Expanded(
+          child: CachedNetworkImage(
+            imageUrl: '${Urls.imageBase_w185}${tvShow.posterPath}',
+            placeholder: (context, url) {
+              return Container(
+                width: MediaQuery.of(context).size.width * 0.3,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
+            imageBuilder: (context, image) {
+              return Container(
+                width: MediaQuery.of(context).size.width * 0.3,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(
+                    image: image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: PopupMenuContainer<String>(
+                  items: recentlyWatched ? [
+                    PopupMenuItem(
+                      value: 'remove',
+                      child: Text(
+                        'Remove',
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                    ),
+                  ] : null,
+                  onItemSelected: (action) async {
+                    if (action != null) {
+                      if (action == 'remove') removeFromRecentlyWatched(tvShow);
+                    }
+                  },
+                  child: InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    onTap: () => navigate(destination: TvShow(tvShow)),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Spacer(),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 5,
+                                horizontal: 8,
+                              ),
+                              margin: EdgeInsets.only(
+                                top: 5,
+                                right: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: Text(
+                                '${tvShow.voteAverage}',
+                                style: Theme.of(context).textTheme.displaySmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Spacer(),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+            errorWidget: (context, url, error) {
+              return Container(
+                width: MediaQuery.of(context).size.width * 0.3,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.error, color: Colors.white54),
+                ),
+              );
+            },
+          ),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.3,
+          margin: EdgeInsets.only(top: 10),
+          child: Text(
+            tvShow.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.3,
+          margin: EdgeInsets.only(top: 5),
+          child: Text(
+            firstAirYear,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(color: Colors.white54),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget StreamingPlatformCard(StreamingPlatform streamingPlatform) {
+    return InkWell(
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      onTap: () => navigate(destination: ViewAll(
+        title: streamingPlatform.name,
+        source: '${Urls.discoverTvShows}&with_watch_providers=${streamingPlatform.id}&watch_region=US',
+        type: ViewAllType.tvShows,
+      )),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.25,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: '${Urls.imageBase_w185}${streamingPlatform.logoPath}',
+          placeholder: (context, url) {
+            return Container(
+              child: Align(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
+          imageBuilder: (context, image) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(
+                  image: image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          },
+          errorWidget: (context, url, error) {
+            return Container(
+              child: Align(
+                alignment: Alignment.center,
+                child: Icon(Icons.error, color: Colors.white54),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget GenreCard(model.Genre genre) {
+    Widget error = Container(
+      width: MediaQuery.of(context).size.width * 0.25,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Align(
+        alignment: Alignment.center,
+        child: Icon(Icons.error, color: Colors.white54),
+      ),
+    );
+
+    Widget placeholder = Container(
+      width: MediaQuery.of(context).size.width * 0.25,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    return InkWell(
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      onTap: () => navigate(destination: ViewAll(
+        title: genre.name,
+        source: '${Urls.discoverTvShows}&with_genres=${genre.id}',
+        type: ViewAllType.tvShows,
+      )),
+      child: CachedNetworkImage(
+        imageUrl: '${Urls.imageBase_w500}/wwemzKWzjKYJFfCeiB57q3r4Bcm.png',
+        placeholder: (context, url) => placeholder,
+        errorWidget: (context, url, _) => error,
+        imageBuilder: (context, image) {
+          return Container(
+            width: MediaQuery.of(context).size.width * 0.25,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: image,
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.black.withOpacity(0.5),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  genre.name,
+                  style: Theme.of(context).textTheme.displayMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  removeFromRecentlyWatched(model.TvShow tvShow) async {
+    // TODO: Implement local storage for recently watched TV shows
+    // This is a placeholder for local storage functionality
+    setState(() {
+      _recentlyWatched.removeWhere((item) => item.id == tvShow.id);
+    });
+  }
 }
