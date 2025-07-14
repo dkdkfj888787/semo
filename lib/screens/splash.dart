@@ -5,12 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:semo/screens/fragments.dart';
-import 'package:semo/screens/landing.dart';
+import 'package:index/screens/fragments.dart';
+import 'package:index/screens/landing.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 class Splash extends StatefulWidget {
+  final Function(Locale) onLanguageChange;
+  
+  const Splash({Key? key, required this.onLanguageChange}) : super(key: key);
+  
   @override
   _SplashState createState() => _SplashState();
 }
@@ -42,15 +47,8 @@ class _SplashState extends State<Splash> {
   }
 
   checkUserSession() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      Widget destination;
-      if (user == null) {
-        destination = Landing();
-      } else {
-        destination = Fragments();
-      }
-      navigate(destination: destination);
-    });
+    // Always go to Landing page since we removed Google authentication
+    navigate(destination: Landing(onLanguageChange: widget.onLanguageChange));
   }
 
   initRemoteConfig() async {
@@ -119,7 +117,7 @@ class _SplashState extends State<Splash> {
                       left: 16,
                     ),
                     child: Text(
-                      'Version $version',
+                      '${AppLocalizations.of(context)?.version ?? 'Version'} $version',
                       style: Theme.of(context).textTheme.displayMedium!.copyWith(
                         color: Colors.white54,
                       ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:semo/models/server.dart';
-import 'package:semo/models/subtitle_style.dart';
+import 'package:index/models/server.dart';
+import 'package:index/models/subtitle_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Preferences {
@@ -46,5 +46,17 @@ class Preferences {
 
   Future<void> clear() async {
     await _prefs?.clear();
+  }
+
+  Future<void> clearRecentSearches() async {
+    await _prefs?.remove('recentSearches');
+  }
+
+  Future<void> clearFavorites() async {
+    await _prefs?.remove('favorites');
+  }
+
+  Future<void> clearRecentlyWatched() async {
+    await _prefs?.remove('recentlyWatched');
   }
 }

@@ -1,25 +1,26 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:semo/screens/favorites.dart';
-import 'package:semo/screens/landing.dart';
-import 'package:semo/models/navigation_page.dart';
-import 'package:semo/screens/movies.dart';
-import 'package:semo/screens/search.dart';
-import 'package:semo/screens/settings.dart';
-import 'package:semo/screens/tv_shows.dart';
-import 'package:semo/utils/enums.dart';
+import 'package:index/screens/favorites.dart';
+import 'package:index/models/navigation_page.dart';
+import 'package:index/screens/movies.dart';
+import 'package:index/screens/search.dart';
+import 'package:index/screens/settings.dart';
+import 'package:index/screens/tv_shows.dart';
+import 'package:index/utils/enums.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 //ignore: must_be_immutable
 class Fragments extends StatefulWidget {
   int initialPageIndex, initialFavoritesTabIndex;
+  final Function(Locale) onLanguageChange;
 
   Fragments({
     this.initialPageIndex = 0,
     this.initialFavoritesTabIndex = 0,
+    required this.onLanguageChange,
   });
 
   @override
@@ -52,37 +53,31 @@ class _FragmentsState extends State<Fragments> with TickerProviderStateMixin {
     }
   }
 
-  checkUserSession() async {
-    await FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        navigate(
-          destination: Landing(),
-          replace: true,
-        );
-      }
-    });
-  }
+  // Removed user session check since we're using guest mode
 
   populatePages() {
     _selectedPageIndex = widget.initialPageIndex;
     _tabController = TabController(length: 2, initialIndex: widget.initialFavoritesTabIndex, vsync: this);
+    
+    final l10n = AppLocalizations.of(context);
+    
     setState(() {
       _navigationPages = [
         NavigationPage(
           icon: Icons.movie,
-          title: 'Movies',
+          title: l10n?.movies ?? 'Movies',
           widget: Movies(),
           pageType: PageType.movies,
         ),
         NavigationPage(
           icon: Icons.video_library,
-          title: 'TV Shows',
+          title: l10n?.tvShows ?? 'TV Shows',
           widget: TvShows(),
           pageType: PageType.tv_shows,
         ),
         NavigationPage(
           icon: Icons.favorite,
-          title: 'Favorites',
+          title: l10n?.favorites ?? 'Favorites',
           widget: TabBarView(
             controller: _tabController,
             children: [
@@ -94,8 +89,8 @@ class _FragmentsState extends State<Fragments> with TickerProviderStateMixin {
         ),
         NavigationPage(
           icon: Icons.settings,
-          title: 'Settings',
-          widget: Settings(),
+          title: l10n?.settings ?? 'Settings',
+          widget: Settings(onLanguageChange: widget.onLanguageChange),
           pageType: PageType.settings,
         ),
       ];
@@ -122,8 +117,9 @@ class _FragmentsState extends State<Fragments> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     initConnectivity();
-    checkUserSession();
-    populatePages();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      populatePages();
+    });
   }
 
   @override

@@ -3,25 +3,29 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:semo/screens/landing.dart';
-import 'package:semo/models/server.dart';
-import 'package:semo/screens/open_source_libraries.dart';
-import 'package:semo/screens/subtitles_preferences.dart';
-import 'package:semo/utils/db_names.dart';
-import 'package:semo/utils/extractor.dart';
-import 'package:semo/utils/preferences.dart';
-import 'package:semo/utils/spinner.dart';
-import 'package:semo/utils/urls.dart';
+import 'package:index/models/server.dart';
+import 'package:index/screens/company_info.dart';
+import 'package:index/screens/open_source_libraries.dart';
+import 'package:index/screens/subtitles_preferences.dart';
+import 'package:index/utils/db_names.dart';
+import 'package:index/utils/extractor.dart';
+import 'package:index/utils/language_manager.dart';
+import 'package:index/utils/preferences.dart';
+import 'package:index/utils/spinner.dart';
+import 'package:index/utils/urls.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
+  final Function(Locale) onLanguageChange;
+  
+  const Settings({Key? key, required this.onLanguageChange}) : super(key: key);
+  
   @override
   _SettingsState createState() => _SettingsState();
 }
@@ -29,8 +33,8 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   Preferences _preferences = Preferences();
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   Spinner? _spinner;
+  String _currentLanguage = 'en';
 
   navigate({required Widget destination, bool replace = false}) async {
     SwipeablePageRoute pageTransition = SwipeablePageRoute(
@@ -215,101 +219,10 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  showDeleteAccountConfirmation() async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Delete account'),
-          content: Text('Are you sure that you want to close your account? Your account will be delete your account, along with all the saved data.\nYou can create a new account at any time.\n\nFor security reasons, you will be asked to re-authenticate first'),
-          actions: [
-            TextButton(
-              child: Text(
-                'Cancel',
-                style: Theme.of(context).textTheme.displayMedium!.copyWith(color: Colors.white54),
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text(
-                'Delete',
-                style: Theme.of(context).textTheme.displayMedium!.copyWith(color: Theme.of(context).primaryColor),
-              ),
-              onPressed: () => reauthenticate(),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  reauthenticate() async {
-    _spinner!.show();
-
-    GoogleSignIn instance = GoogleSignIn();
-
-    GoogleSignInAccount? googleUser = await instance.signIn();
-    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-    var credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      await auth.signInWithCredential(credential);
-
-      _spinner!.dismiss();
-
-      deleteAccount();
-    } catch (e) {
-      print(e);
-
-      _spinner!.dismiss();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to re-authenticate',
-            style: Theme.of(context).textTheme.displayMedium,
-          ),
-          backgroundColor: Theme.of(context).cardColor,
-        ),
-      );
-    }
-  }
-
-  deleteAccount() async {
-    _spinner!.show();
-
-    await Future.wait([
-      clearRecentSearches(showSpinner: false, showSnackBar: false),
-      clearFavorites(showSpinner: false, showSnackBar: false),
-      clearRecentlyWatched(showSpinner: false, showSnackBar: false),
-    ]);
-    await _preferences.clear();
-
-    await _auth.currentUser!.delete();
-
-    _spinner!.dismiss();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Account deleted',
-          style: Theme.of(context).textTheme.displayMedium,
-        ),
-        backgroundColor: Theme.of(context).cardColor,
-      ),
-    );
-
-    navigate(destination: Landing(), replace: true);
-  }
-
   Future<void> clearRecentSearches({bool showSpinner = true, bool showSnackBar = true}) async {
     if (showSpinner) _spinner!.show();
-    await _firestore.collection(DB.recentSearches).doc(_auth.currentUser!.uid).delete();
+    // Clear from local storage since we're in guest mode
+    await _preferences.clearRecentSearches();
     if (showSpinner) _spinner!.dismiss();
 
     if (showSnackBar) {
@@ -327,7 +240,8 @@ class _SettingsState extends State<Settings> {
 
   Future<void> clearFavorites({bool showSpinner = true, bool showSnackBar = true}) async {
     if (showSpinner) _spinner!.show();
-    await _firestore.collection(DB.favorites).doc(_auth.currentUser!.uid).delete();
+    // Clear from local storage since we're in guest mode
+    await _preferences.clearFavorites();
     if (showSpinner) _spinner!.dismiss();
 
     if (showSnackBar) {
@@ -345,7 +259,8 @@ class _SettingsState extends State<Settings> {
 
   Future<void> clearRecentlyWatched({bool showSpinner = true, bool showSnackBar = true}) async {
     if (showSpinner) _spinner!.show();
-    await _firestore.collection(DB.recentlyWatched).doc(_auth.currentUser!.uid).delete();
+    // Clear from local storage since we're in guest mode
+    await _preferences.clearRecentlyWatched();
     if (showSpinner) _spinner!.dismiss();
 
     if (showSnackBar) {
@@ -364,6 +279,7 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
+    _loadCurrentLanguage();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _spinner = Spinner(context);
 
@@ -373,11 +289,69 @@ class _SettingsState extends State<Settings> {
     });
   }
 
-  Widget UserCard() {
-    String photoUrl = _auth.currentUser!.photoURL ?? '';
-    String name = _auth.currentUser!.displayName ?? 'User';
-    String email = _auth.currentUser!.email ?? 'user@email.com';
+  _loadCurrentLanguage() async {
+    final savedLocale = await LanguageManager.getSavedLanguage();
+    setState(() {
+      _currentLanguage = savedLocale.languageCode;
+    });
+  }
 
+  openLanguageSelector() async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        String selectedLanguage = _currentLanguage;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return ListView(
+              shrinkWrap: true,
+              children: [
+                ListTile(
+                  selected: selectedLanguage == 'en',
+                  selectedColor: Theme.of(context).primaryColor,
+                  selectedTileColor: Theme.of(context).primaryColor.withOpacity(.2),
+                  titleTextStyle: Theme.of(context).textTheme.displayMedium!.copyWith(
+                    fontWeight: selectedLanguage == 'en' ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  title: Text(l10n.english),
+                  leading: selectedLanguage == 'en' ? Icon(Icons.check) : null,
+                  onTap: () async {
+                    setState(() => selectedLanguage = 'en');
+                    widget.onLanguageChange(Locale('en'));
+                    this.setState(() => _currentLanguage = 'en');
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  selected: selectedLanguage == 'ar',
+                  selectedColor: Theme.of(context).primaryColor,
+                  selectedTileColor: Theme.of(context).primaryColor.withOpacity(.2),
+                  titleTextStyle: Theme.of(context).textTheme.displayMedium!.copyWith(
+                    fontWeight: selectedLanguage == 'ar' ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  title: Text(l10n.arabic),
+                  leading: selectedLanguage == 'ar' ? Icon(Icons.check) : null,
+                  onTap: () async {
+                    setState(() => selectedLanguage = 'ar');
+                    widget.onLanguageChange(Locale('ar'));
+                    this.setState(() => _currentLanguage = 'ar');
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget GuestCard() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       margin: EdgeInsets.only(
         top: 18,
@@ -391,36 +365,10 @@ class _SettingsState extends State<Settings> {
             height: MediaQuery.of(context).size.width * .2,
             child: CircleAvatar(
               backgroundColor: Theme.of(context).cardColor,
-              child: CachedNetworkImage(
-                imageUrl: photoUrl,
-                placeholder: (context, url) {
-                  return Align(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
-                  );
-                },
-                imageBuilder: (context, image) {
-                  return Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(1000),
-                      image: DecorationImage(
-                        image: image,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                },
-                errorWidget: (context, url, error) {
-                  return Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(1000)),
-                    child: Icon(
-                      Icons.account_circle,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  );
-                },
+              child: Icon(
+                Icons.person,
+                color: Theme.of(context).primaryColor,
+                size: 40,
               ),
             ),
           ),
@@ -431,12 +379,12 @@ class _SettingsState extends State<Settings> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name,
+                    'Guest User',
                     style: Theme.of(context).textTheme.displayLarge,
                   ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 2.5)),
                   Text(
-                    email,
+                    'Using guest mode',
                     style: Theme.of(context).textTheme.displayMedium!.copyWith(color: Colors.white54),
                   ),
                 ],
@@ -482,6 +430,8 @@ class _SettingsState extends State<Settings> {
   }
 
   SettingsList Settings() {
+    final l10n = AppLocalizations.of(context)!;
+    
     SettingsThemeData settingsThemeData = SettingsThemeData(
       titleTextColor: Theme.of(context).primaryColor,
       settingsListBackground: Theme.of(context).scaffoldBackgroundColor,
@@ -493,6 +443,18 @@ class _SettingsState extends State<Settings> {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       sections: [
+        SettingsSection(
+          title: SectionTitle(l10n.language),
+          tiles: [
+            SectionTile(
+              title: l10n.language,
+              description: _currentLanguage == 'en' ? l10n.english : l10n.arabic,
+              icon: Icons.language,
+              trailing: Platform.isIOS ? Icon(Icons.keyboard_arrow_right_outlined) : null,
+              onPressed: (context) => openLanguageSelector(),
+            ),
+          ],
+        ),
         SettingsSection(
           title: SectionTitle('Playback'),
           tiles: [
@@ -522,6 +484,12 @@ class _SettingsState extends State<Settings> {
         SettingsSection(
           title: SectionTitle('App'),
           tiles: [
+            SectionTile(
+              title: l10n.aboutCompany,
+              icon: Icons.business,
+              trailing: Platform.isIOS ? Icon(Icons.keyboard_arrow_right_outlined) : null,
+              onPressed: (context) => navigate(destination: CompanyInfo()),
+            ),
             SectionTile(
               title: 'About',
               icon: Icons.info_outline_rounded,
@@ -560,23 +528,6 @@ class _SettingsState extends State<Settings> {
               trailing: Platform.isIOS ? Icon(Icons.keyboard_arrow_right_outlined) : null,
               onPressed: (context) => clearRecentlyWatched(),
             ),
-            SectionTile(
-              title: 'Delete account',
-              description: 'Delete your account, along with all the saved data. You can create a new account at any time',
-              icon: Icons.no_accounts_rounded,
-              trailing: Platform.isIOS ? Icon(Icons.keyboard_arrow_right_outlined) : null,
-              onPressed: (context) => showDeleteAccountConfirmation(),
-            ),
-            SectionTile(
-              title: 'Sign out',
-              icon: Icons.exit_to_app,
-              trailing: Platform.isIOS ? Icon(Icons.keyboard_arrow_right_outlined) : null,
-              onPressed: (context) async {
-                await GoogleSignIn().signOut();
-                await FirebaseAuth.instance.signOut();
-                navigate(destination: Landing(), replace: true);
-              },
-            ),
           ],
         ),
       ],
@@ -589,7 +540,7 @@ class _SettingsState extends State<Settings> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            UserCard(),
+            GuestCard(),
             Settings(),
           ],
         ),

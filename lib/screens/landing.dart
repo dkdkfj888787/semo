@@ -1,21 +1,22 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:semo/screens/fragments.dart';
-import 'package:semo/utils/spinner.dart';
+import 'package:index/screens/fragments.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:video_player/video_player.dart';
 
 class Landing extends StatefulWidget {
+  final Function(Locale) onLanguageChange;
+  
+  const Landing({Key? key, required this.onLanguageChange}) : super(key: key);
+  
   @override
   _LandingState createState() => _LandingState();
 }
 
 class _LandingState extends State<Landing> {
   VideoPlayerController? _controller;
-  Spinner? _spinner;
 
   initializeVideo() {
     _controller = VideoPlayerController.asset('assets/cover_portrait.mp4');
@@ -25,41 +26,8 @@ class _LandingState extends State<Landing> {
     });
   }
 
-  googleAuthentication() async {
-    _spinner!.show();
-
-    GoogleSignIn instance = GoogleSignIn();
-
-    GoogleSignInAccount? googleUser = await instance.signIn();
-    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-    var credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      await auth.signInWithCredential(credential);
-
-      _spinner!.dismiss();
-
-      navigate(destination: Fragments());
-    } catch (e) {
-      print(e);
-
-      _spinner!.dismiss();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to authenticate',
-            style: Theme.of(context).textTheme.displayMedium,
-          ),
-          backgroundColor: Theme.of(context).cardColor,
-        ),
-      );
-    }
+  continueAsGuest() async {
+    navigate(destination: Fragments(onLanguageChange: widget.onLanguageChange));
   }
 
   navigate({required Widget destination}) async {
@@ -81,7 +49,6 @@ class _LandingState extends State<Landing> {
     initializeVideo();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _spinner = Spinner(context);
       await FirebaseAnalytics.instance.logScreenView(
         screenName: 'Landing',
       );
@@ -104,7 +71,9 @@ class _LandingState extends State<Landing> {
     );
   }
 
-  Widget ContinueWithGoogle() {
+  Widget ContinueAsGuestButton() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       width: double.infinity,
       height: 60,
@@ -117,7 +86,7 @@ class _LandingState extends State<Landing> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   FaIcon(
-                    FontAwesomeIcons.google,
+                    FontAwesomeIcons.userLarge,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -135,7 +104,7 @@ class _LandingState extends State<Landing> {
                     children: [
                       Spacer(),
                       Text(
-                        'Continue with Google',
+                        l10n.continueAsGuest,
                         style: Theme.of(context).textTheme.displayMedium,
                       ),
                       Spacer(),
@@ -157,13 +126,15 @@ class _LandingState extends State<Landing> {
           ),
         ),
         onPressed: () {
-          googleAuthentication();
+          continueAsGuest();
         },
       ),
     );
   }
 
   Widget Content() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Column(
       children: [
         Spacer(),
@@ -185,7 +156,7 @@ class _LandingState extends State<Landing> {
                 child: Container(
                   width: double.infinity,
                   child: Text(
-                    'Welcome!',
+                    l10n.welcome,
                     style: Theme.of(context).textTheme.titleLarge,
                     textAlign: TextAlign.left,
                   ),
@@ -196,7 +167,7 @@ class _LandingState extends State<Landing> {
                 child: Container(
                   width: double.infinity,
                   child: Text(
-                    'Discover a vast library of entertainment, from blockbuster hits to indie gems, all tailored to your tastes. Enjoy unlimited streaming on any device, create your personalized watchlist, and get ready for an unparalleled viewing experience.',
+                    l10n.welcomeDescription,
                     style: Theme.of(context).textTheme.displayMedium,
                     textAlign: TextAlign.left,
                   ),
@@ -211,7 +182,7 @@ class _LandingState extends State<Landing> {
                   margin: EdgeInsets.only(
                     bottom: 18,
                   ),
-                  child: ContinueWithGoogle(),
+                  child: ContinueAsGuestButton(),
                 ),
               ),
             ],

@@ -34,8 +34,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "net.examnet.semo"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.voxin.index"
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -44,13 +44,12 @@ android {
     }
 
     defaultConfig {
-        applicationId = "net.examnet.semo"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        applicationId = "com.voxin.index"
+        minSdk = 23
+        targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         multiDexEnabled true
-        minSdkVersion 23
     }
 
     signingConfigs {

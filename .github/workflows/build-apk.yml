@@ -1,0 +1,74 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Generate localization files
+      run: flutter gen-l10n
+
+    - name: Build APK
+      run: flutter build apk --release
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: index-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+
+    - name: Create Release
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v2.0.0-${{ github.run_number }}
+        name: Index v2.0.0 Build ${{ github.run_number }}
+        body: |
+          ## Index v2.0.0 - Modern VOD Streaming App by Voxin
+          
+          ### Features:
+          - ✅ Guest mode access (no authentication required)
+          - ✅ Arabic and English language support
+          - ✅ Modern UI with updated dependencies
+          - ✅ Company information section
+          - ✅ TMDB API integration for movies and TV shows
+          - ✅ SubDL API integration for subtitles
+          
+          ### Changes:
+          - Removed Google Sign-In dependency
+          - Added guest mode functionality
+          - Implemented multi-language support
+          - Updated app name to "Index"
+          - Added Voxin company information
+          - Updated all dependencies to latest versions
+          
+          **Download the APK below and install on your Android device.**
+        files: build/app/outputs/flutter-apk/app-release.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

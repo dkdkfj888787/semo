@@ -1,81 +1,165 @@
-# Semo
+# Index - Modern VOD Streaming App
 
-![Semo Screenshots](https://raw.githubusercontent.com/moses-mbaga/semo/d4ed0519764b78d729cc459476086928d0a2d54b/banner.png)
+<div align="center">
+  <img src="assets/icon.png" alt="Index Logo" width="120" height="120">
+  
+  [![Build APK](https://github.com/hhhh748/semo/actions/workflows/build-apk.yml/badge.svg)](https://github.com/hhhh748/semo/actions/workflows/build-apk.yml)
+  [![Flutter](https://img.shields.io/badge/Flutter-3.24.0-blue.svg)](https://flutter.dev/)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+</div>
 
-Semo is an open-source Flutter application designed to offer a seamless movie and TV show streaming experience. With support for multiple streaming servers, synced watch progress, and fully customizable subtitles, Semo aims to be your go-to streaming app for enjoying your favorite content.
+## 📱 About
 
-## Features
+**Index** is a modern Video-on-Demand (VOD) streaming application developed by **Voxin**. The app provides seamless access to movies and TV shows with multi-language support and guest mode functionality.
 
-🗂 Comprehensive Library
+### 🏢 Company Information
+- **Developer**: Voxin
+- **Founded**: 2020
+- **Development Started**: 2021
+- **Release Date**: TBA
+- **Specialization**: Powerful mobile applications development
 
-- Access almost all movies and TV shows.
-- Explore a vast library to find something for everyone.
+## ✨ Features
 
-🎥 Stream Playback
+### 🎯 Core Features
+- 🎬 **Movies & TV Shows**: Browse extensive library of content
+- 🔍 **Smart Search**: Find your favorite content quickly
+- ❤️ **Favorites**: Save and organize your preferred content
+- 📱 **Guest Mode**: No authentication required - instant access
+- 🌍 **Multi-language**: Arabic and English support with RTL
+- 🎨 **Modern UI**: Clean, intuitive interface
+- 📺 **Subtitle Support**: Integrated subtitle system
 
-- Play movies and TV shows directly using high-quality HLS streams.
-- Multiple streaming servers to ensure uninterrupted viewing.
+### 🔧 Technical Features
+- 🚀 **Latest Flutter**: Built with Flutter 3.24.0
+- 🎯 **TMDB Integration**: Real-time movie and TV show data
+- 📝 **SubDL Integration**: Subtitle support with Arabic language
+- 💾 **Local Storage**: Guest mode with local data persistence
+- 🔄 **Auto Updates**: GitHub Actions CI/CD pipeline
 
-⏳ Synced Watch Progress
+## 🚀 Getting Started
 
-- Automatically syncs playback progress for movies and episodes.
-- Never lose your spot, even if you switch devices or revisit content later.
+### Prerequisites
+- Flutter 3.24.0 or higher
+- Dart SDK 3.5.0 or higher
+- Android Studio / VS Code
+- Android SDK (for Android builds)
 
-🔠 Customizable Subtitles
+### Installation
 
-- Support for .srt subtitle files.
-- Fully customizable options
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/hhhh748/semo.git
+   cd semo
+   ```
 
-## Download ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/moses-mbaga/semo/total?link=https%3A%2F%2Fgithub.com%2Fmoses-mbaga%2Fsemo%2Freleases)
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
 
-Download APK
-[![Download APK](https://custom-icon-badges.demolab.com/badge/-Download-F25278?style=for-the-badge&logo=download&logoColor=white&color=AB261D)](https://github.com/moses-mbaga/semo/releases)
+3. **Generate localization files**
+   ```bash
+   flutter gen-l10n
+   ```
 
-Download IPA
-[![Download IPA](https://custom-icon-badges.demolab.com/badge/-Download-F25278?style=for-the-badge&logo=download&logoColor=white&color=AB261D)](https://github.com/moses-mbaga/semo/releases)
+4. **Run the app**
+   ```bash
+   flutter run
+   ```
 
-## Tech Stack
+### Building APK
 
-**Client:** Flutter
-
-**Server:** Firebase
-
-## Installation
-
-Prerequisites:
-- [Flutter SDK](https://flutter.dev/) (latest stable version).
-- A code editor (e.g., [VSCode](https://code.visualstudio.com/), [Android Studio](https://developer.android.com/studio)).
-- A Firebase account
-
-Instructions:
-
-- Clone the repository
 ```bash
-git clone https://github.com/moses-mbaga/semo.git
-cd semo
+# Debug APK
+flutter build apk --debug
+
+# Release APK
+flutter build apk --release
 ```
 
-- Install the dependencies:
-```bash
-flutter pub get
+## 📱 Download
+
+[![Download APK](https://custom-icon-badges.demolab.com/badge/-Download%20APK-F25278?style=for-the-badge&logo=download&logoColor=white&color=AB261D)](https://github.com/hhhh748/semo/releases)
+
+## 🌐 Localization
+
+The app supports multiple languages:
+
+- **English** (en) - Default
+- **Arabic** (ar) - RTL support
+
+### Adding New Languages
+
+1. Add new `.arb` file in `lib/l10n/`
+2. Update `l10n.yaml` configuration
+3. Run `flutter gen-l10n`
+
+## 🔑 API Configuration
+
+The app uses the following APIs:
+
+### TMDB API
+- **Purpose**: Movie and TV show data
+- **Configuration**: `lib/utils/api_config.dart`
+
+### SubDL API
+- **Purpose**: Subtitle integration
+- **Language**: Arabic subtitles support
+- **Configuration**: `lib/utils/api_config.dart`
+
+## 📁 Project Structure
+
+```
+lib/
+├── l10n/                 # Localization files
+├── models/               # Data models
+├── screens/              # UI screens
+├── utils/                # Utilities and helpers
+├── widgets/              # Reusable widgets
+└── main.dart            # App entry point
 ```
 
-- Under libs/utils folder, create a dart file named **api_keys.dart** and add the following code:
-```dart
-class APIKeys {
-  static const String tmdbAccessTokenAuth = 'Your TMDB access token auth';
-  static const String subdl = 'Your SUBDL API Key';
-}
-```
+## 🔄 CI/CD
 
-- Add Firebase to the app using FlutterFire CLI. You can follow insructions from the [official documentation](https://firebase.google.com/docs/flutter/setup)
+The project includes GitHub Actions workflow for:
+- ✅ Automated APK building
+- ✅ Release creation
+- ✅ Artifact upload
+- ✅ Multi-platform support
 
-- Run the app:
-```bash
-flutter run
-```
-## Support
+## 🎨 Theming
 
-If you encounter any issues or have suggestions, please open an issue in the [GitHub Issues](https://github.com/moses-mbaga/semo/issues) section.
+The app features a dark theme with:
+- **Primary Color**: `#AB261D` (Red)
+- **Background**: `#120201` (Dark)
+- **Cards**: `#250604` (Dark Red)
+- **Typography**: Freckle Face font
 
-Enjoy streaming with Semo! 🌟
+## 🏢 About Voxin
+
+**Voxin** is a technology company specializing in powerful mobile application development. Founded in 2020, we focus on creating innovative solutions that enhance user experience and provide seamless digital entertainment.
+
+### Our Mission
+To develop cutting-edge applications that bring entertainment and technology together, making digital content accessible to everyone.
+
+## 📞 Support
+
+For support and inquiries:
+- 📧 Email: support@voxin.com
+- 🌐 Website: [voxin.com](https://voxin.com)
+- 📱 GitHub: [@hhhh748](https://github.com/hhhh748)
+
+## 🙏 Acknowledgments
+
+- Flutter team for the amazing framework
+- TMDB for providing movie and TV show data
+- SubDL for subtitle services
+- Open source community for various packages used
+
+---
+
+<div align="center">
+  <p>Made with ❤️ by <strong>Voxin</strong></p>
+  <p>© 2024 Voxin. All rights reserved.</p>
+</div>

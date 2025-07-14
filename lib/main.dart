@@ -4,17 +4,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:semo/firebase_options.dart';
-import 'package:semo/screens/splash.dart';
-import 'package:semo/utils/preferences.dart';
+import 'package:index/firebase_options.dart';
+import 'package:index/screens/splash.dart';
+import 'package:index/utils/preferences.dart';
+import 'package:index/utils/language_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   await Preferences.init();
   await initializeFirebase();
-  runApp(Semo());
+  runApp(IndexApp());
 }
 
 initializeFirebase() async {
@@ -31,14 +34,49 @@ initializeFirebase() async {
   });
 }
 
-class Semo extends StatelessWidget {
-  const Semo({super.key});
+class IndexApp extends StatefulWidget {
+  const IndexApp({super.key});
+
+  @override
+  State<IndexApp> createState() => _IndexAppState();
+}
+
+class _IndexAppState extends State<IndexApp> {
+  Locale _locale = const Locale('en');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLanguage();
+  }
+
+  _loadSavedLanguage() async {
+    final savedLocale = await LanguageManager.getSavedLanguage();
+    setState(() {
+      _locale = savedLocale;
+    });
+  }
+
+  void changeLanguage(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+    LanguageManager.saveLanguage(locale.languageCode);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Semo',
+      title: 'Index',
       debugShowCheckedModeBanner: false,
+      locale: _locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: LanguageManager.getSupportedLocales(),
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
@@ -126,7 +164,7 @@ class Semo extends StatelessWidget {
           behavior: SnackBarBehavior.floating,
         )
       ),
-      home: Splash(),
+      home: Splash(onLanguageChange: changeLanguage),
     );
   }
 }
