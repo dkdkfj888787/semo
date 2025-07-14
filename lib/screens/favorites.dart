@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +11,7 @@ import 'package:index/models/movie.dart' as model;
 import 'package:index/models/tv_show.dart' as model;
 import 'package:index/screens/movie.dart';
 import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/utils/db_names.dart';
 import 'package:index/utils/enums.dart';
 import 'package:index/utils/pop_up_menu.dart';
@@ -36,8 +34,6 @@ class Favorites extends StatefulWidget {
 class _FavoritesState extends State<Favorites> {
   PageType? _pageType;
   Spinner? _spinner;
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<dynamic> _favorites = [];
   List<int> _rawFavorites = [];
 
@@ -88,7 +84,7 @@ class _FavoritesState extends State<Favorites> {
 
   Future<void> getFavoriteDetails(int id) async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(

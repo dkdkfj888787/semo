@@ -4,9 +4,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -21,7 +19,7 @@ import 'package:index/models/search_results.dart' as model;
 import 'package:index/models/stream.dart';
 import 'package:index/screens/person_media.dart';
 import 'package:index/screens/player.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/utils/db_names.dart';
 import 'package:index/utils/enums.dart';
 import 'package:index/utils/extractor.dart';
@@ -43,8 +41,6 @@ class Movie extends StatefulWidget {
 
 class _MovieState extends State<Movie> {
   model.Movie? _movie;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isFavorite = false;
   List<int> _favoriteMovies = [];
   model.SearchResults _recommendationsResults = model.SearchResults(page: 0, totalPages: 0, totalResults: 0);
@@ -204,7 +200,7 @@ class _MovieState extends State<Movie> {
     String youtubeId = '';
 
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getMovieVideosUrl(_movie!.id));
@@ -243,7 +239,7 @@ class _MovieState extends State<Movie> {
 
   Future<void> getDuration() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getMovieDetails(_movie!.id));
@@ -285,7 +281,7 @@ class _MovieState extends State<Movie> {
 
     try {
       Map<String, dynamic> parameters = {
-        'api_key': APIKeys.subdl,
+        'api_key': ApiConfig.subdl,
         'tmdb_id': '${_movie!.id}',
         'languages': 'EN',
         'subs_per_page': '5',
@@ -347,7 +343,7 @@ class _MovieState extends State<Movie> {
 
   Future<void> getCast() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getMovieCast(_movie!.id));
@@ -385,7 +381,7 @@ class _MovieState extends State<Movie> {
       'page': '${_recommendationsResults.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getMovieRecommendations(_movie!.id)).replace(queryParameters: parameters);
@@ -433,7 +429,7 @@ class _MovieState extends State<Movie> {
       'page': '${_similarResults.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getMovieSimilar(_movie!.id)).replace(queryParameters: parameters);

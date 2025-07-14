@@ -4,9 +4,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +15,7 @@ import 'package:index/models/movie.dart' as model;
 import 'package:index/models/search_results.dart' as model;
 import 'package:index/models/streaming_platform.dart';
 import 'package:index/screens/movie.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/utils/db_names.dart';
 import 'package:index/utils/enums.dart';
 import 'package:index/utils/pop_up_menu.dart';
@@ -51,8 +49,7 @@ class _MoviesState extends State<Movies> {
     StreamingPlatform(id: 337, logoPath: '/disney_plus.png', name: 'Disney+'),
     StreamingPlatform(id: 15, logoPath: '/hulu.png', name: 'Hulu'),
   ];
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
+
   late Spinner _spinner;
   bool _isLoading = true;
 
@@ -104,7 +101,7 @@ class _MoviesState extends State<Movies> {
 
   Future<void> getNowPlaying() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.nowPlayingMovies);
@@ -140,7 +137,7 @@ class _MoviesState extends State<Movies> {
       'page': '${resultsModel.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(url).replace(queryParameters: parameters);
@@ -225,7 +222,7 @@ class _MoviesState extends State<Movies> {
 
   Future<void> getMovieDetails(int id) async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getMovieDetails(id)).replace();
@@ -258,7 +255,7 @@ class _MoviesState extends State<Movies> {
 
   Future<void> getGenres() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.movieGenres).replace();
@@ -297,7 +294,7 @@ class _MoviesState extends State<Movies> {
         'with_genres': '${genre.id}',
       };
       Map<String, String> headers = {
-        HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+        HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
       };
 
       Uri uri = Uri.parse(Urls.discoverMovie).replace(queryParameters: parameters);

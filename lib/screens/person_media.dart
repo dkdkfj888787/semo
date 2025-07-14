@@ -14,7 +14,7 @@ import 'package:index/models/person.dart' as model;
 import 'package:index/models/tv_show.dart'  as model;
 import 'package:index/screens/movie.dart';
 import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/utils/enums.dart';
 import 'package:index/utils/spinner.dart';
 import 'package:index/utils/urls.dart';
@@ -70,7 +70,7 @@ class _PersonMediaState extends State<PersonMedia> with TickerProviderStateMixin
 
   Future<void> getMovies() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getPersonMovies(_person!.id));
@@ -102,7 +102,7 @@ class _PersonMediaState extends State<PersonMedia> with TickerProviderStateMixin
 
   Future<void> getTvShows() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getPersonTvShows(_person!.id));

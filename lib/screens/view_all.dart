@@ -11,7 +11,7 @@ import 'package:http/http.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/screens/movie.dart';
 import 'package:index/models/movie.dart' as model;
 import 'package:index/models/search_results.dart' as model;
@@ -72,7 +72,7 @@ class _ViewAllState extends State<ViewAll> {
     if (_parameters != null) parameters.addAll(_parameters!);
 
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(_source!).replace(queryParameters: parameters);

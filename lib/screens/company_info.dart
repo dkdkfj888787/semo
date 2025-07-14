@@ -77,24 +77,24 @@ class CompanyInfo extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'المزيد من المعلومات',
+                      l10n.moreInfo,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'شركة فوكسين هي شركة رائدة في مجال تطوير تطبيقات الترفيه والبث المباشر. نحن نسعى لتقديم أفضل تجربة مشاهدة للمستخدمين من خلال التقنيات الحديثة والتصميم المبتكر.',
+                      l10n.companyDetails,
                       style: Theme.of(context).textTheme.displayMedium,
                       textAlign: TextAlign.justify,
                     ),
                     SizedBox(height: 15),
                     Text(
-                      'رؤيتنا: أن نكون الخيار الأول للمستخدمين في عالم الترفيه الرقمي.',
+                      l10n.companyVision,
                       style: Theme.of(context).textTheme.displayMedium,
                       textAlign: TextAlign.justify,
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'مهمتنا: تطوير حلول تقنية متقدمة تلبي احتياجات المستخدمين وتوفر لهم تجربة استثنائية.',
+                      l10n.companyMission,
                       style: Theme.of(context).textTheme.displayMedium,
                       textAlign: TextAlign.justify,
                     ),

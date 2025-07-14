@@ -4,9 +4,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -21,7 +19,7 @@ import 'package:index/models/stream.dart';
 import 'package:index/models/tv_show.dart' as model;
 import 'package:index/screens/person_media.dart';
 import 'package:index/screens/player.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/utils/db_names.dart';
 import 'package:index/utils/enums.dart';
 import 'package:index/utils/extractor.dart';
@@ -44,8 +42,6 @@ class TvShow extends StatefulWidget {
 
 class _TvShowState extends State<TvShow> {
   model.TvShow? _tvShow;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isFavorite = false;
   List<int> _favoriteTvShows = [];
   Map<String, Map<String, dynamic>> _rawRecentlyWatched = {};
@@ -173,7 +169,7 @@ class _TvShowState extends State<TvShow> {
 
   Future<void> getSeasons() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getTvShowDetails(_tvShow!.id));
@@ -222,7 +218,7 @@ class _TvShowState extends State<TvShow> {
 
   Future<List<model.Episode>> getEpisodes(model.Season season) async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getEpisodes(_tvShow!.id, season.number));
@@ -321,7 +317,7 @@ class _TvShowState extends State<TvShow> {
     String youtubeId = '';
 
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getTvShowVideosUrl(_tvShow!.id));
@@ -362,7 +358,7 @@ class _TvShowState extends State<TvShow> {
 
   Future<void> getCast() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getTvShowCast(_tvShow!.id));
@@ -400,7 +396,7 @@ class _TvShowState extends State<TvShow> {
       'page': '${_recommendationsResults.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getTvShowRecommendations(_tvShow!.id)).replace(queryParameters: parameters);
@@ -448,7 +444,7 @@ class _TvShowState extends State<TvShow> {
       'page': '${_similarResults.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getTvShowSimilar(_tvShow!.id)).replace(queryParameters: parameters);
@@ -502,7 +498,7 @@ class _TvShowState extends State<TvShow> {
 
     try {
       Map<String, dynamic> parameters = {
-        'api_key': APIKeys.subdl,
+        'api_key': ApiConfig.subdl,
         'tmdb_id': '${_tvShow!.id}',
         'season_number': '${episode.season}',
         'episode_number': '${episode.number}',

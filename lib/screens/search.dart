@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +11,7 @@ import 'package:http/http.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/screens/movie.dart';
 import 'package:index/models/movie.dart' as model;
 import 'package:index/models/search_results.dart' as model;
@@ -42,8 +40,6 @@ class _SearchState extends State<Search> {
   model.SearchResults _searchResults = model.SearchResults(page: 0, totalPages: 0, totalResults: 0);
   PagingController _pagingController = PagingController(firstPageKey: 0);
   List<String> _recentSearches = [];
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isConnectedToInternet = true;
   late StreamSubscription _connectionSubscription;
 
@@ -118,7 +114,7 @@ class _SearchState extends State<Search> {
       'page': pageKey == 0 ? '1' : '${_searchResults.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     String url = _pageType == PageType.movies ? Urls.searchMovies : Urls.searchTvShows;

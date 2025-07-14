@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -47,8 +45,6 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
   MediaStream? _stream;
   List<File>? _subtitles;
   PageType? _pageType;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   VideoPlayerController? _videoPlayerController;
   SubtitleController _subtitleController = SubtitleController(
     subtitleType: SubtitleType.srt,

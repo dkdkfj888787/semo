@@ -2,9 +2,9 @@ name: Build APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, modernize-app-to-index ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -32,6 +32,26 @@ jobs:
     - name: Generate localization files
       run: flutter gen-l10n
 
+    - name: Analyze code
+      run: flutter analyze --no-fatal-infos
+
+    - name: Create keystore directory
+      run: mkdir -p android/app/keystore
+
+    - name: Create dummy keystore
+      run: |
+        keytool -genkey -v -keystore android/app/keystore/release.keystore \
+          -alias release -keyalg RSA -keysize 2048 -validity 10000 \
+          -storepass 123456 -keypass 123456 \
+          -dname "CN=Voxin, OU=Development, O=Voxin, L=City, S=State, C=US"
+
+    - name: Create key.properties
+      run: |
+        echo "storePassword=123456" > android/key.properties
+        echo "keyPassword=123456" >> android/key.properties
+        echo "keyAlias=release" >> android/key.properties
+        echo "storeFile=keystore/release.keystore" >> android/key.properties
+
     - name: Build APK
       run: flutter build apk --release
 
@@ -42,7 +62,7 @@ jobs:
         path: build/app/outputs/flutter-apk/app-release.apk
 
     - name: Create Release
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/modernize-app-to-index'
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v2.0.0-${{ github.run_number }}

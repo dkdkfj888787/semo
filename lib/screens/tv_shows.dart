@@ -4,9 +4,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +15,7 @@ import 'package:index/models/search_results.dart' as model;
 import 'package:index/models/streaming_platform.dart';
 import 'package:index/models/tv_show.dart' as model;
 import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_keys.dart';
+import 'package:index/utils/api_config.dart';
 import 'package:index/utils/db_names.dart';
 import 'package:index/utils/enums.dart';
 import 'package:index/utils/pop_up_menu.dart';
@@ -49,8 +47,6 @@ class _TvShowsState extends State<TvShows> {
     StreamingPlatform(id: 15, logoPath: '/hulu.png', name: 'Hulu'),
   ];
   List<model.Genre> _genres = [];
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   late Spinner _spinner;
   bool _isLoading = true;
 
@@ -100,7 +96,7 @@ class _TvShowsState extends State<TvShows> {
 
   Future<void> getOnTheAir() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.onTheAirTvShows);
@@ -136,7 +132,7 @@ class _TvShowsState extends State<TvShows> {
       'page': '${resultsModel.page + 1}',
     };
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(url).replace(queryParameters: parameters);
@@ -209,7 +205,7 @@ class _TvShowsState extends State<TvShows> {
 
   Future<void> getTvShowsDetails(int id) async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.getTvShowDetails(id)).replace();
@@ -244,7 +240,7 @@ class _TvShowsState extends State<TvShows> {
 
   Future<void> getGenres() async {
     Map<String, String> headers = {
-      HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+      HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
     };
 
     Uri uri = Uri.parse(Urls.tvShowGenres).replace();
@@ -283,7 +279,7 @@ class _TvShowsState extends State<TvShows> {
         'with_genres': '${genre.id}',
       };
       Map<String, String> headers = {
-        HttpHeaders.authorizationHeader: 'Bearer ${APIKeys.tmdbAccessTokenAuth}',
+        HttpHeaders.authorizationHeader: 'Bearer ${ApiConfig.tmdbApiKey}',
       };
 
       Uri uri = Uri.parse(Urls.discoverTvShow).replace(queryParameters: parameters);

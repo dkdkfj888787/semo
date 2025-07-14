@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   Preferences _preferences = Preferences();
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Spinner? _spinner;
   String _currentLanguage = 'en';
 
