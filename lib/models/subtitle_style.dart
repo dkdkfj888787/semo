@@ -29,14 +29,28 @@ class SubtitleStyle {
   });
 
   factory SubtitleStyle.fromJson(Map<String, dynamic> json) {
+    // Handle empty JSON case
+    if (json.isEmpty) {
+      return SubtitleStyle(
+        fontSize: 18.0,
+        color: 'White',
+        hasBorder: true,
+        borderStyle: SubtitleBorderStyle(
+          strokeWidth: 5.0,
+          style: PaintingStyle.stroke,
+          color: 'Black',
+        ),
+      );
+    }
+    
     return SubtitleStyle(
       fontSize: json['fontSize'] ?? 18.0,
-      color: json['color'] != null ? json['color'] : 'Black',
+      color: json['color'] ?? 'White',
       hasBorder: json['hasBorder'] ?? true,
       borderStyle: SubtitleBorderStyle(
         strokeWidth: json['borderWidth'] ?? 5.0,
         style: PaintingStyle.values.byName(json['borderStyle'] ?? 'stroke'),
-        color: json['borderColor'] != null ? json['borderColor'] : 'White',
+        color: json['borderColor'] ?? 'Black',
       ),
     );
   }

@@ -14,7 +14,8 @@ import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 //ignore: must_be_immutable
 class Fragments extends StatefulWidget {
-  int initialPageIndex, initialFavoritesTabIndex;
+  final int initialPageIndex;
+  final int initialFavoritesTabIndex;
   final Function(Locale) onLanguageChange;
 
   Fragments({

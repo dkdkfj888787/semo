@@ -31,19 +31,21 @@
 - 📺 **Subtitle Support**: Integrated subtitle system
 
 ### 🔧 Technical Features
-- 🚀 **Latest Flutter**: Built with Flutter 3.24.0
+- 🚀 **Latest Flutter**: Built with Flutter 3.19.0+
 - 🎯 **TMDB Integration**: Real-time movie and TV show data
 - 📝 **SubDL Integration**: Subtitle support with Arabic language
 - 💾 **Local Storage**: Guest mode with local data persistence
 - 🔄 **Auto Updates**: GitHub Actions CI/CD pipeline
+- 🔥 **Firestore Integration**: Cloud database for user data
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter 3.24.0 or higher
-- Dart SDK 3.5.0 or higher
+- Flutter 3.19.0 or higher
+- Dart SDK 3.3.0 or higher
 - Android Studio / VS Code
 - Android SDK (for Android builds)
+- Firebase project with Firestore enabled
 
 ### Installation
 
@@ -114,8 +116,10 @@ The app uses the following APIs:
 lib/
 ├── l10n/                 # Localization files
 ├── models/               # Data models
+├── repositories/         # Data repositories
 ├── screens/              # UI screens
 ├── utils/                # Utilities and helpers
+│   └── firestore_service.dart  # Firestore integration
 ├── widgets/              # Reusable widgets
 └── main.dart            # App entry point
 ```
@@ -155,7 +159,17 @@ For support and inquiries:
 - Flutter team for the amazing framework
 - TMDB for providing movie and TV show data
 - SubDL for subtitle services
+- Firebase for cloud services and authentication
 - Open source community for various packages used
+
+## 🛠️ Fixed Issues
+
+- Added missing return types in methods
+- Fixed constructor issues in Fragments class
+- Enhanced SubtitleStyle.fromJson to handle empty JSON
+- Added const constructor to IndexApp instantiation
+- Fixed method names in landing.dart to follow Dart naming conventions
+- Added Firestore support for future use
 
 ---
 

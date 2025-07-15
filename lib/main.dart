@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +12,27 @@ import 'firebase_options.dart';
 import 'screens/landing.dart';
 import 'utils/preferences.dart';
 import 'utils/language_manager.dart';
+import 'utils/firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   await Preferences.init();
   await initializeFirebase();
-  runApp(IndexApp());
+  runApp(const IndexApp());
 }
 
-initializeFirebase() async {
+Future<void> initializeFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Initialize Firestore with settings
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
+  
+  // Initialize FirestoreService
+  FirestoreService();
 
   FirebaseCrashlytics crashlytics = await FirebaseCrashlytics.instance;
   runZonedGuarded<Future<void>>(() async {
@@ -50,7 +61,7 @@ class _IndexAppState extends State<IndexApp> {
     _loadSavedLanguage();
   }
 
-  _loadSavedLanguage() async {
+  Future<void> _loadSavedLanguage() async {
     final savedLocale = await LanguageManager.getSavedLanguage();
     setState(() {
       _locale = savedLocale;

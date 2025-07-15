@@ -18,7 +18,7 @@ class Landing extends StatefulWidget {
 class _LandingState extends State<Landing> {
   VideoPlayerController? _controller;
 
-  initializeVideo() {
+  void initializeVideo() {
     _controller = VideoPlayerController.asset('assets/cover_portrait.mp4');
     _controller!.initialize().then((_) {
       _controller!.play();
@@ -26,11 +26,11 @@ class _LandingState extends State<Landing> {
     });
   }
 
-  continueAsGuest() async {
-    navigate(destination: Fragments(onLanguageChange: widget.onLanguageChange));
+  Future<void> continueAsGuest() async {
+    await navigate(destination: Fragments(onLanguageChange: widget.onLanguageChange));
   }
 
-  navigate({required Widget destination}) async {
+  Future<void> navigate({required Widget destination}) async {
     SwipeablePageRoute pageTransition = SwipeablePageRoute(
       canOnlySwipeFromEdge: true,
       builder: (BuildContext context) => destination,
@@ -65,13 +65,13 @@ class _LandingState extends State<Landing> {
     }
   }
 
-  Widget BackgroundTint() {
+  Widget backgroundTint() {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor.withOpacity(.5),
     );
   }
 
-  Widget ContinueAsGuestButton() {
+  Widget continueAsGuestButton() {
     final l10n = AppLocalizations.of(context)!;
     
     return Container(
@@ -132,7 +132,7 @@ class _LandingState extends State<Landing> {
     );
   }
 
-  Widget Content() {
+  Widget content() {
     final l10n = AppLocalizations.of(context)!;
     
     return Column(
@@ -182,7 +182,7 @@ class _LandingState extends State<Landing> {
                   margin: EdgeInsets.only(
                     bottom: 18,
                   ),
-                  child: ContinueAsGuestButton(),
+                  child: continueAsGuestButton(),
                 ),
               ),
             ],
@@ -198,8 +198,8 @@ class _LandingState extends State<Landing> {
       body: _controller != null ? Stack(
         children: [
           VideoPlayer(_controller!),
-          BackgroundTint(),
-          Content(),
+          backgroundTint(),
+          content(),
         ],
       ) : Container(),
     );

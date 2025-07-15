@@ -15,19 +15,19 @@ class Preferences {
 
   static SharedPreferences? _prefs;
 
-  static init() async {
+  static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  setServer(Server server) async {
+  Future<void> setServer(Server server) async {
     await _prefs?.setString('server', server.name);
   }
 
-  setSeekDuration(int seekDuration) async {
+  Future<void> setSeekDuration(int seekDuration) async {
     await _prefs?.setInt('seekDuration', seekDuration);
   }
 
-  setSubtitlesStyle(SubtitleStyle subtitlesStyle) async {
+  Future<void> setSubtitlesStyle(SubtitleStyle subtitlesStyle) async {
     await _prefs?.setString('subtitleStyle', json.encode(subtitlesStyle.toJson()));
   }
 
