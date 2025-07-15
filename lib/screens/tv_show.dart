@@ -141,6 +141,18 @@ class _TvShowState extends State<TvShow> {
 
     await user.set({
       'tv_shows': favoriteTvShows,
+    }, onError: (e) {
+      print("Error adding to favorites: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to add to favorites',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() {
       _favoriteTvShows = favoriteTvShows;
@@ -154,6 +166,18 @@ class _TvShowState extends State<TvShow> {
 
     await user.set({
       'tv_shows': favoriteTvShows,
+    }, onError: (e) {
+      print("Error removing from favorites: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to remove from favorites',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() {
       _favoriteTvShows = favoriteTvShows;
@@ -595,6 +619,18 @@ class _TvShowState extends State<TvShow> {
 
     await user.set({
       'tv_shows': recentlyWatched,
+    }, onError: (e) {
+      print("Error adding to recently watched: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to add to recently watched',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     model.TvShow updatedTvShow = _tvShow!;
     updatedTvShow.seasons!.firstWhere((s) => s.id == season.id).episodes!.firstWhere((e) => e.id == episode.id)
@@ -633,6 +669,18 @@ class _TvShowState extends State<TvShow> {
 
     await user.set({
       'tv_shows': recentlyWatched,
+    }, onError: (e) {
+      print("Error removing from recently watched: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to remove from recently watched',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     model.TvShow updatedTvShow = _tvShow!;
     updatedTvShow.seasons!.firstWhere((s) => s.id == season.id).episodes!.firstWhere((e) => e.id == episode.id)

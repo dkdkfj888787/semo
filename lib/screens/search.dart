@@ -87,6 +87,18 @@ class _SearchState extends State<Search> {
 
     await user.set({
       _pageType == PageType.movies ? 'movies' : 'tv_shows': recentSearches,
+    }, onError: (e) {
+      print("Error adding to recent searches: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save recent search',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() => _recentSearches = recentSearches);
   }
@@ -97,6 +109,18 @@ class _SearchState extends State<Search> {
 
     await user.set({
       (_pageType == PageType.movies ? 'movies' : 'tv_shows'): recentSearches,
+    }, onError: (e) {
+      print("Error removing from recent searches: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to remove recent search',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() => _recentSearches = recentSearches);
   }

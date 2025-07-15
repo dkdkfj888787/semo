@@ -329,6 +329,18 @@ class _MoviesState extends State<Movies> {
 
     await user.set({
       'movies': rawRecentlyWatched,
+    }, onError: (e) {
+      print("Error removing from recently watched: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to remove from recently watched',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() {
       _recentlyWatched.remove(movie);

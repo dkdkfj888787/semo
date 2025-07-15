@@ -139,6 +139,18 @@ class _MovieState extends State<Movie> {
 
     await user.set({
       'movies': favoriteMovies,
+    }, onError: (e) {
+      print("Error adding to favorites: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to add to favorites',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() {
       _favoriteMovies = favoriteMovies;
@@ -152,6 +164,18 @@ class _MovieState extends State<Movie> {
 
     await user.set({
       'movies': favoriteMovies,
+    }, onError: (e) {
+      print("Error removing from favorites: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to remove from favorites',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+        ),
+      );
+    });
 
     setState(() {
       _favoriteMovies = favoriteMovies;
