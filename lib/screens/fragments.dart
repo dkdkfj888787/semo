@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../gen_l10n/app_localizations.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:index/screens/favorites.dart';
-import 'package:index/models/navigation_page.dart';
-import 'package:index/screens/movies.dart';
-import 'package:index/screens/search.dart';
-import 'package:index/screens/settings.dart';
-import 'package:index/screens/tv_shows.dart';
-import 'package:index/utils/enums.dart';
+import 'favorites.dart';
+import '../models/navigation_page.dart';
+import 'movies.dart';
+import 'search.dart';
+import 'settings.dart';
+import 'tv_shows.dart';
+import '../utils/enums.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 //ignore: must_be_immutable

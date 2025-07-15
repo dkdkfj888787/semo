@@ -9,15 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:index/models/movie.dart' as model;
-import 'package:index/models/person.dart' as model;
-import 'package:index/models/tv_show.dart'  as model;
-import 'package:index/screens/movie.dart';
-import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_config.dart';
-import 'package:index/utils/enums.dart';
-import 'package:index/utils/spinner.dart';
-import 'package:index/utils/urls.dart';
+import '../models/movie.dart' as model;
+import '../models/person.dart' as model;
+import '../models/tv_show.dart'  as model;
+import 'movie.dart';
+import 'tv_show.dart';
+import '../utils/api_config.dart';
+import '../utils/enums.dart';
+import '../utils/spinner.dart';
+import '../utils/urls.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 //ignore: must_be_immutable

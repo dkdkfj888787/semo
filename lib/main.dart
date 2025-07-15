@@ -8,9 +8,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
-import 'package:index/screens/splash.dart';
-import 'package:index/utils/preferences.dart';
-import 'package:index/utils/language_manager.dart';
+import 'screens/landing.dart';
+import 'utils/preferences.dart';
+import 'utils/language_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -164,7 +164,7 @@ class _IndexAppState extends State<IndexApp> {
           behavior: SnackBarBehavior.floating,
         )
       ),
-      home: Splash(onLanguageChange: changeLanguage),
+      home: Landing(onLanguageChange: changeLanguage),
     );
   }
 }

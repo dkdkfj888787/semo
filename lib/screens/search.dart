@@ -10,15 +10,15 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:index/screens/tv_show.dart';
-import 'package:index/utils/api_config.dart';
-import 'package:index/screens/movie.dart';
-import 'package:index/models/movie.dart' as model;
-import 'package:index/models/search_results.dart' as model;
-import 'package:index/models/tv_show.dart' as model;
-import 'package:index/utils/db_names.dart';
-import 'package:index/utils/enums.dart';
-import 'package:index/utils/urls.dart';
+import 'tv_show.dart';
+import '../utils/api_config.dart';
+import 'movie.dart';
+import '../models/movie.dart' as model;
+import '../models/search_results.dart' as model;
+import '../models/tv_show.dart' as model;
+import '../utils/db_names.dart';
+import '../utils/enums.dart';
+import '../utils/urls.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 //ignore: must_be_immutable

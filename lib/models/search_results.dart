@@ -1,7 +1,7 @@
-import 'package:index/models/movie.dart';
-import 'package:index/models/person.dart';
-import 'package:index/models/tv_show.dart';
-import 'package:index/utils/enums.dart';
+import 'movie.dart';
+import 'person.dart';
+import 'tv_show.dart';
+import '../utils/enums.dart';
 
 class SearchResults {
   int page;

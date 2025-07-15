@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:index/screens/welcome.dart';
+import 'welcome.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 class Splash extends StatefulWidget {

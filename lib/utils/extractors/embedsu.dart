@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:index/models/stream.dart';
+import '../../models/stream.dart';
 
 class EmbedSu {
   final String baseUrl = "https://embed.su";

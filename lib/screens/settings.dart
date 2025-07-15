@@ -7,16 +7,16 @@ import 'package:flutter/material.dart';
 import '../gen_l10n/app_localizations.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:index/models/server.dart';
-import 'package:index/screens/company_info.dart';
-import 'package:index/screens/open_source_libraries.dart';
-import 'package:index/screens/subtitles_preferences.dart';
+import '../models/server.dart';
+import 'company_info.dart';
+import 'open_source_libraries.dart';
+import 'subtitles_preferences.dart';
 
-import 'package:index/utils/extractor.dart';
-import 'package:index/utils/language_manager.dart';
-import 'package:index/utils/preferences.dart';
-import 'package:index/utils/spinner.dart';
-import 'package:index/utils/urls.dart';
+import '../utils/extractor.dart';
+import '../utils/language_manager.dart';
+import '../utils/preferences.dart';
+import '../utils/spinner.dart';
+import '../utils/urls.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:url_launcher/url_launcher.dart';
 

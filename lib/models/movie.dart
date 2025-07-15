@@ -1,5 +1,5 @@
-import 'package:index/models/genre.dart';
-import 'package:index/models/person.dart';
+import 'genre.dart';
+import 'person.dart';
 
 class Movie {
   bool adult;

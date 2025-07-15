@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:index/models/server.dart';
-import 'package:index/models/subtitle_style.dart';
+import '../models/server.dart';
+import '../models/subtitle_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Preferences {

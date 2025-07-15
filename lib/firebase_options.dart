@@ -40,7 +40,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
+  static const FirebaseOptions web = const FirebaseOptions(
     apiKey: 'AIzaSyDummy_Web_Key_Replace_With_Real_Key',
     appId: '1:123456789:web:dummy_app_id',
     messagingSenderId: '123456789',
@@ -50,7 +50,7 @@ class DefaultFirebaseOptions {
     measurementId: 'G-DUMMY_MEASUREMENT_ID',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static const FirebaseOptions android = const FirebaseOptions(
     apiKey: 'AIzaSyDummy_Android_Key_Replace_With_Real_Key',
     appId: '1:123456789:android:dummy_app_id',
     messagingSenderId: '123456789',
@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'index-voxin.appspot.com',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static const FirebaseOptions ios = const FirebaseOptions(
     apiKey: 'AIzaSyDummy_iOS_Key_Replace_With_Real_Key',
     appId: '1:123456789:ios:dummy_app_id',
     messagingSenderId: '123456789',
@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.voxin.index',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
+  static const FirebaseOptions macos = const FirebaseOptions(
     apiKey: 'AIzaSyDummy_macOS_Key_Replace_With_Real_Key',
     appId: '1:123456789:macos:dummy_app_id',
     messagingSenderId: '123456789',
@@ -76,7 +76,7 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.voxin.index',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
+  static const FirebaseOptions windows = const FirebaseOptions(
     apiKey: 'AIzaSyDummy_Windows_Key_Replace_With_Real_Key',
     appId: '1:123456789:windows:dummy_app_id',
     messagingSenderId: '123456789',
