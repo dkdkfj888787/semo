@@ -5,6 +5,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/duration_state.dart';
 import '../models/stream.dart';
 import '../utils/db_names.dart';
@@ -85,6 +86,8 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
   }
 
   updateRecentlyWatched() async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('recentlyWatched').doc(_pageType == PageType.movies ? 'movies' : 'tv_shows').get();
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       var recentlyWatched;
 
@@ -168,9 +171,16 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
         }
       }
 
-      user.set({
-        _pageType!.name: recentlyWatched,
-    }, onError: (e) => print("Error getting user: $e"));
+      try {
+        await FirebaseFirestore.instance.collection('recentlyWatched').doc(_pageType == PageType.movies ? 'movies' : 'tv_shows').set({
+          _pageType!.name: recentlyWatched,
+        });
+      } catch (e) {
+        print("Error updating recently watched: $e");
+      }
+    } catch (e) {
+      print("Error getting user data: $e");
+    }
   }
 
   initializePlayer() async {

@@ -4,3 +4,8 @@ enum PageType {
   favorites,
   settings
 }
+
+enum InternetConnectionStatus {
+  connected,
+  disconnected
+}

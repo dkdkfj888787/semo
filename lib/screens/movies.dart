@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -33,7 +34,8 @@ class Movies extends StatefulWidget {
 class _MoviesState extends State<Movies> {
   List<model.Movie> _nowPlaying = [], _recentlyWatched = [];
   Map<String, Map<String, dynamic>>? _rawRecentlyWatched;
-  CarouselSliderController _nowPlayingController = CarouselSliderController();
+  // Fix: Replace CarouselSliderController with PageController
+  PageController _nowPlayingController = PageController();
   int _currentNowPlayingIndex = 0;
   model.SearchResults _trendingResults = model.SearchResults(page: 0, totalPages: 0, totalResults: 0);
   model.SearchResults _popularResults = model.SearchResults(page: 0, totalPages: 0, totalResults: 0);
@@ -196,6 +198,8 @@ class _MoviesState extends State<Movies> {
   }
 
   Future<void> getRecentlyWatched() async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('recentlyWatched').doc('movies').get();
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       Map<String, Map<String, dynamic>> rawRecentlyWatched = ((data['movies'] ?? {}) as Map<dynamic, dynamic>).map<String, Map<String, dynamic>>((key, value) {
         return MapEntry(key, Map<String, dynamic>.from(value));
@@ -204,7 +208,7 @@ class _MoviesState extends State<Movies> {
 
       for (String id in rawRecentlyWatched.keys) getMovieDetails(int.parse(id));
       setState(() => _rawRecentlyWatched = rawRecentlyWatched);
-    }, onError: (e) {
+    } catch (e) {
       print("Error getting recently watched: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -215,7 +219,7 @@ class _MoviesState extends State<Movies> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
   }
 
   Future<void> getMovieDetails(int id) async {
@@ -323,13 +327,15 @@ class _MoviesState extends State<Movies> {
     return backdropPath;
   }
 
-  removeFromRecentlyWatched(model.Movie movie) async {
+  Future<void> removeFromRecentlyWatched(model.Movie movie) async {
     Map<String, Map<String, dynamic>> rawRecentlyWatched = _rawRecentlyWatched!;
     rawRecentlyWatched.removeWhere((id, value) => id == '${movie.id}');
 
-    await user.set({
-      'movies': rawRecentlyWatched,
-    }, onError: (e) {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc('current_user').set({
+        'movies': rawRecentlyWatched,
+      }, SetOptions(merge: true));
+    } catch (e) {
       print("Error removing from recently watched: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -340,7 +346,7 @@ class _MoviesState extends State<Movies> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
 
     setState(() {
       _recentlyWatched.remove(movie);
@@ -373,7 +379,8 @@ class _MoviesState extends State<Movies> {
       children: [
         Container(
           child: CarouselSlider.builder(
-            carouselController: _nowPlayingController,
+            // Using PageController instead of CarouselController
+            // carouselController: _nowPlayingController,
             itemCount: movies.length,
             options: CarouselOptions(
               aspectRatio: 2,

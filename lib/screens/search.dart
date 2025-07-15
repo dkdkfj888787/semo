@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'tv_show.dart';
 import '../utils/api_config.dart';
+import '../utils/enums.dart' hide InternetConnectionStatus;
 import 'movie.dart';
 import '../models/movie.dart' as model;
 import '../models/search_results.dart' as model;
@@ -62,12 +64,14 @@ class _SearchState extends State<Search> {
     }
   }
 
-  getRecentSearches() async {
+  Future<void> getRecentSearches() async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('recentSearches').doc('searches').get();
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       List<String> recentSearches = ((data[_pageType == PageType.movies ? 'movies' : 'tv_shows'] ?? []) as List<dynamic>).cast<String>();
 
       setState(() => _recentSearches = recentSearches);
-    }, onError: (e) {
+    } catch (e) {
       print("Error getting recent searches: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -78,16 +82,18 @@ class _SearchState extends State<Search> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
   }
 
   addToRecentSearches(String query) async {
     List<String> recentSearches = _recentSearches;
     recentSearches.add(query);
 
-    await user.set({
-      _pageType == PageType.movies ? 'movies' : 'tv_shows': recentSearches,
-    }, onError: (e) {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc('current_user').set({
+        _pageType == PageType.movies ? 'movies' : 'tv_shows': recentSearches,
+      }, SetOptions(merge: true));
+    } catch (e) {
       print("Error adding to recent searches: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -98,18 +104,20 @@ class _SearchState extends State<Search> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
 
     setState(() => _recentSearches = recentSearches);
   }
 
-  removeFromRecentSearches(String query) async {
+  Future<void> removeFromRecentSearches(String query) async {
     List<String> recentSearches = _recentSearches;
     recentSearches.remove(query);
 
-    await user.set({
-      (_pageType == PageType.movies ? 'movies' : 'tv_shows'): recentSearches,
-    }, onError: (e) {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc('current_user').set({
+        (_pageType == PageType.movies ? 'movies' : 'tv_shows'): recentSearches,
+      }, SetOptions(merge: true));
+    } catch (e) {
       print("Error removing from recent searches: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -120,7 +128,7 @@ class _SearchState extends State<Search> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
 
     setState(() => _recentSearches = recentSearches);
   }
@@ -209,15 +217,15 @@ class _SearchState extends State<Search> {
   }
 
   initConnectivity() async {
-    bool isConnectedToInternet = await InternetConnection().hasInternetAccess;
+    bool isConnectedToInternet = await InternetConnectionCheckerPlus().hasConnection;
     setState(() => _isConnectedToInternet = isConnectedToInternet);
 
-    _connectionSubscription = InternetConnection().onStatusChange.listen((InternetStatus status) {
+    _connectionSubscription = InternetConnectionCheckerPlus().onStatusChange.listen((status) {
       switch (status) {
-        case InternetStatus.connected:
+        case InternetConnectionStatus.connected:
           if (mounted) setState(() => _isConnectedToInternet = true);
           break;
-        case InternetStatus.disconnected:
+        case InternetConnectionStatus.disconnected:
           if (mounted) setState(() => _isConnectedToInternet = false);
           break;
       }

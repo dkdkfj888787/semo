@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -33,7 +34,8 @@ class TvShows extends StatefulWidget {
 class _TvShowsState extends State<TvShows> {
   List<model.TvShow> _onTheAir = [], _recentlyWatched = [];
   Map<String, Map<String, dynamic>>? _rawRecentlyWatched;
-  CarouselSliderController _onTheAirController = CarouselSliderController();
+  // Fix: Replace CarouselSliderController with PageController
+  PageController _onTheAirController = PageController();
   int _currentOnTheAirIndex = 0;
   model.SearchResults _popularResults = model.SearchResults(page: 0, totalPages: 0, totalResults: 0);
   model.SearchResults _topRatedResults = model.SearchResults(page: 0, totalPages: 0, totalResults: 0);
@@ -177,6 +179,8 @@ class _TvShowsState extends State<TvShows> {
   }
 
   Future<void> getRecentlyWatched() async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('recentlyWatched').doc('tv_shows').get();
       Map<dynamic, dynamic> data = (doc.data() ?? {}) as Map<dynamic, dynamic>;
       Map<String, Map<String, dynamic>> rawRecentlyWatched = ((data['tv_shows'] ?? {}) as Map<dynamic, dynamic>).map<String, Map<String, dynamic>>((key, value) {
         return MapEntry(key, Map<String, dynamic>.from(value));
@@ -187,7 +191,7 @@ class _TvShowsState extends State<TvShows> {
       }
 
       setState(() => _rawRecentlyWatched = rawRecentlyWatched);
-    }, onError: (e) {
+    } catch (e) {
       print("Error getting recently watched: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -198,7 +202,7 @@ class _TvShowsState extends State<TvShows> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
   }
 
   Future<void> getTvShowsDetails(int id) async {
@@ -308,13 +312,15 @@ class _TvShowsState extends State<TvShows> {
     return backdropPath;
   }
 
-  removeFromRecentlyWatched(model.TvShow tvShow) async {
+  Future<void> removeFromRecentlyWatched(model.TvShow tvShow) async {
     Map<String, Map<String, dynamic>> rawRecentlyWatched = _rawRecentlyWatched!;
     rawRecentlyWatched['${tvShow.id}']!['visibleInMenu'] = false;
 
-    await user.set({
-      'tv_shows': rawRecentlyWatched,
-    }, onError: (e) {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc('current_user').set({
+        'tv_shows': rawRecentlyWatched,
+      }, SetOptions(merge: true));
+    } catch (e) {
       print("Error removing from recently watched: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -325,7 +331,7 @@ class _TvShowsState extends State<TvShows> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
 
     setState(() {
       _recentlyWatched.remove(tvShow);
@@ -357,7 +363,8 @@ class _TvShowsState extends State<TvShows> {
       children: [
         Container(
           child: CarouselSlider.builder(
-            carouselController: _onTheAirController,
+            // Using PageController instead of CarouselController
+            // carouselController: _onTheAirController,
             itemCount: tvShows.length,
             options: CarouselOptions(
               aspectRatio: 2,
@@ -540,9 +547,9 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
-  Widget TvShowCard(model.TvShow tvShow, {bool recentlyWatched = false}) {
+  Widget _buildTvShowCard(model.TvShow tvShow, {bool recentlyWatched = false}) {
     List<String> firstAirDateContent = tvShow.firstAirDate.split('-');
-    String firstAirYear = firstAirDateContent[0];
+    String firstAirYear = firstAirDateContent.isNotEmpty ? firstAirDateContent[0] : '';
 
     return Column(
       children: [
@@ -576,7 +583,7 @@ class _TvShowsState extends State<TvShows> {
                 ] : null,
                 onItemSelected: (action) async {
                   if (action != null) {
-                    if (action == 'remove') removeFromRecentlyWatched(tvShow);
+                    if (action == 'remove') await removeFromRecentlyWatched(tvShow);
                   }
                 },
                 child: Container(
@@ -697,7 +704,7 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
-  Widget StreamingPlatformCard(StreamingPlatform streamingPlatform) {
+  Widget _buildStreamingPlatformCard(StreamingPlatform streamingPlatform) {
     return Container(
       height: double.infinity,
       decoration: BoxDecoration(
@@ -752,7 +759,7 @@ class _TvShowsState extends State<TvShows> {
               itemBuilder: (context, index) {
                 return Container(
                   margin: EdgeInsets.only(right: (index + 1) != genres.length ? 18 : 0),
-                  child: GenreCard(genres[index]),
+                  child: _buildGenreCard(genres[index]),
                 );
               },
             ),
@@ -762,7 +769,7 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
-  Widget GenreCardImageBuilder(model.Genre genre, {required ImageProvider image}) {
+  Widget _buildGenreCardImage(model.Genre genre, {required ImageProvider image}) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * .6,
       child: Column(
@@ -812,7 +819,7 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
-  Widget GenreCard(model.Genre genre) {
+  Widget _buildGenreCard(model.Genre genre) {
     Widget error = Container(
       width: MediaQuery.of(context).size.width * .6,
       decoration: BoxDecoration(
@@ -852,7 +859,7 @@ class _TvShowsState extends State<TvShows> {
                 imageUrl: '${Urls.getBestImageUrl(context)}${snapshot.data!}',
                 placeholder: (context, url) => placeholder,
                 imageBuilder: (context, image) {
-                  return GenreCardImageBuilder(genre, image: image);
+                  return _buildGenreCardImage(genre, image: image);
                 },
                 errorWidget: (context, url, _) => error,
               );
@@ -864,7 +871,7 @@ class _TvShowsState extends State<TvShows> {
       imageUrl: '${Urls.getBestImageUrl(context)}${genre.backdropPath}',
       placeholder: (context, url) => placeholder,
       imageBuilder: (context, image) {
-        return GenreCardImageBuilder(genre, image: image);
+        return _buildGenreCardImage(genre, image: image);
       },
       errorWidget: (context, url, _) => error,
     );
@@ -920,10 +927,17 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
+  // This is a duplicate method that should be removed
+  // Using _buildTvShowCard instead
   Widget TvShowCard(model.TvShow tvShow, {bool recentlyWatched = false}) {
+    return _buildTvShowCard(tvShow, recentlyWatched: recentlyWatched);
+  }
+  
+  // Original implementation moved to _buildTvShowCard
+  Widget _originalTvShowCardImplementation(model.TvShow tvShow, {bool recentlyWatched = false}) {
     List<String> firstAirDateContent = tvShow.firstAirDate.split('-');
     String firstAirYear = firstAirDateContent.isNotEmpty ? firstAirDateContent[0] : '';
-
+    
     return Column(
       children: [
         Expanded(
@@ -966,7 +980,7 @@ class _TvShowsState extends State<TvShows> {
                   ] : null,
                   onItemSelected: (action) async {
                     if (action != null) {
-                      if (action == 'remove') removeFromRecentlyWatched(tvShow);
+                      if (action == 'remove') await removeFromRecentlyWatched(tvShow);
                     }
                   },
                   child: InkWell(
@@ -1054,7 +1068,7 @@ class _TvShowsState extends State<TvShows> {
       onTap: () => navigate(destination: ViewAll(
         title: streamingPlatform.name,
         source: '${Urls.discoverTvShows}&with_watch_providers=${streamingPlatform.id}&watch_region=US',
-        type: ViewAllType.tvShows,
+        pageType: PageType.tv_shows,
       )),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.25,
@@ -1097,7 +1111,7 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
-  Widget GenreCard(model.Genre genre) {
+  Widget _buildSmallGenreCard(model.Genre genre) {
     Widget error = Container(
       width: MediaQuery.of(context).size.width * 0.25,
       height: double.infinity,
@@ -1131,7 +1145,7 @@ class _TvShowsState extends State<TvShows> {
       onTap: () => navigate(destination: ViewAll(
         title: genre.name,
         source: '${Urls.discoverTvShows}&with_genres=${genre.id}',
-        type: ViewAllType.tvShows,
+        pageType: PageType.tv_shows,
       )),
       child: CachedNetworkImage(
         imageUrl: '${Urls.imageBase_w500}/wwemzKWzjKYJFfCeiB57q3r4Bcm.png',
@@ -1168,7 +1182,7 @@ class _TvShowsState extends State<TvShows> {
     );
   }
 
-  removeFromRecentlyWatched(model.TvShow tvShow) async {
+  Future<void> _removeFromRecentlyWatched(model.TvShow tvShow) async {
     // TODO: Implement local storage for recently watched TV shows
     // This is a placeholder for local storage functionality
     setState(() {

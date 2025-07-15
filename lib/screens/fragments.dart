@@ -9,7 +9,7 @@ import 'movies.dart';
 import 'search.dart';
 import 'settings.dart';
 import 'tv_shows.dart';
-import '../utils/enums.dart';
+import '../utils/enums.dart' hide InternetConnectionStatus;
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 //ignore: must_be_immutable
@@ -98,16 +98,20 @@ class _FragmentsState extends State<Fragments> with TickerProviderStateMixin {
     });
   }
 
+  // Define a local variable to fix the missing InternetStatus issue
+  static const connected = 0;
+  static const disconnected = 1;
+  
   initConnectivity() async {
-    bool isConnectedToInternet = await InternetConnection().hasInternetAccess;
+    bool isConnectedToInternet = await InternetConnectionCheckerPlus().hasConnection;
     setState(() => _isConnectedToInternet = isConnectedToInternet);
 
-    _connectionSubscription = InternetConnection().onStatusChange.listen((InternetStatus status) async {
+    _connectionSubscription = InternetConnectionCheckerPlus().onStatusChange.listen((status) async {
       switch (status) {
-        case InternetStatus.connected:
+        case InternetConnectionStatus.connected:
           if (mounted) setState(() => _isConnectedToInternet = true);
           break;
-        case InternetStatus.disconnected:
+        case InternetConnectionStatus.disconnected:
           if (mounted) setState(() => _isConnectedToInternet = false);
           break;
       }

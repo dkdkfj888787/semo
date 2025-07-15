@@ -18,6 +18,7 @@ class Urls {
   static const String nowPlayingMovies = '$tmdbBase/movie/now_playing';
   static const String onTheAirTvShows = '$tmdbBase/tv/on_the_air';
   static const String trendingMovies = '$tmdbBase/trending/movie/week';
+  static const String discoverTvShows = '$tmdbBase/discover/tv';
   static const String popularMovies = '$tmdbBase/movie/popular';
   static const String popularTvShows = '$tmdbBase/tv/popular';
   static const String topRatedMovies = '$tmdbBase/movie/top_rated';

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import '../utils/enums.dart';
 import '../models/movie.dart' as model;
 import '../models/person.dart' as model;
 import '../models/search_results.dart' as model;
@@ -119,7 +121,7 @@ class _MovieState extends State<Movie> {
           _favoriteMovies = favoriteMovies;
         });
       }
-    }, onError: (e) {
+    } catch (e) {
       print("Error getting favorites: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -130,7 +132,7 @@ class _MovieState extends State<Movie> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
   }
 
   addToFavorites() async {
@@ -198,7 +200,7 @@ class _MovieState extends State<Movie> {
           setState(() => _movie!.watchedProgress = watchedProgress);
         }
       }
-    }, onError: (e) {
+    } catch (e) {
       print("Error getting recently watched: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -209,7 +211,7 @@ class _MovieState extends State<Movie> {
           backgroundColor: Theme.of(context).cardColor,
         ),
       );
-    });
+    }
   }
 
   Future<void> getTrailerUrl() async {

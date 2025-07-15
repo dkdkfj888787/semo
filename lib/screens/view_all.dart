@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import '../utils/enums.dart' hide InternetConnectionStatus;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'tv_show.dart';
@@ -124,16 +125,18 @@ class _ViewAllState extends State<ViewAll> {
     }
   }
 
+  // Using the InternetConnectionStatus enum from utils/enums.dart
+  
   initConnectivity() async {
-    bool isConnectedToInternet = await InternetConnection().hasInternetAccess;
+    bool isConnectedToInternet = await InternetConnectionCheckerPlus().hasConnection;
     setState(() => _isConnectedToInternet = isConnectedToInternet);
 
-    _connectionSubscription = InternetConnection().onStatusChange.listen((InternetStatus status) {
+    _connectionSubscription = InternetConnectionCheckerPlus().onStatusChange.listen((InternetConnectionStatus status) {
       switch (status) {
-        case InternetStatus.connected:
+        case InternetConnectionStatus.connected:
           if (mounted) setState(() => _isConnectedToInternet = true);
           break;
-        case InternetStatus.disconnected:
+        case InternetConnectionStatus.disconnected:
           if (mounted) setState(() => _isConnectedToInternet = false);
           break;
       }

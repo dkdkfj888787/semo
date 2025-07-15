@@ -111,22 +111,20 @@ class _SubtitlesPreferencesState extends State<SubtitlesPreferences> {
     bool enabled = true,
     Function(BuildContext context)? onPressed,
   }) {
-    return SettingsTile(
+    return ListTile(
       title: Text(
         title,
         style: Theme.of(context).textTheme.displayMedium,
       ),
-      leading: null,
       trailing: trailing,
-      backgroundColor: Platform.isIOS ? Theme.of(context).cardColor: Colors.transparent,
-      onPressed: onPressed,
+      enabled: enabled,
+      onTap: onPressed != null ? () => onPressed(context) : null,
     );
   }
 
-  SettingsList Customizations() {
-    SettingsThemeData settingsThemeData = SettingsThemeData(
-      settingsListBackground: Theme.of(context).scaffoldBackgroundColor,
-    );
+  Widget Customizations() {
+    // Using standard ListView instead of SettingsList
+    Color backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
       filled: true,
@@ -137,18 +135,17 @@ class _SubtitlesPreferencesState extends State<SubtitlesPreferences> {
       ),
     );
 
-    return SettingsList(
-      lightTheme: settingsThemeData,
-      darkTheme: settingsThemeData,
+    return ListView(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      sections: [
-        SettingsSection(
-          title: SectionTitle('Font'),
-          tiles: [
-            SectionTile(
-              title: 'Size',
-              trailing: Container(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text('Font', style: Theme.of(context).textTheme.headlineSmall),
+        ),
+        SectionTile(
+          title: 'Size',
+          trailing: Container(
                 padding: EdgeInsets.symmetric(vertical: 5),
                 child: DropdownMenu<double>(
                   initialSelection: _subtitleStyle!.fontSize,
