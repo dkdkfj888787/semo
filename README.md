@@ -3,7 +3,7 @@
 <div align="center">
   <img src="assets/icon.png" alt="Index Logo" width="120" height="120">
   
-  [![Build APK](https://github.com/hhhh748/semo/actions/workflows/build-apk.yml/badge.svg)](https://github.com/hhhh748/semo/actions/workflows/build-apk.yml)
+  [![Build APK](https://github.com/uiopooi/semo/actions/workflows/build-apk.yml/badge.svg)](https://github.com/uiopooi/semo/actions/workflows/build-apk.yml)
   [![Flutter](https://img.shields.io/badge/Flutter-3.24.0-blue.svg)](https://flutter.dev/)
   [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 </div>
@@ -49,7 +49,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/hhhh748/semo.git
+   git clone https://github.com/uiopooi/semo.git
    cd semo
    ```
 
@@ -80,7 +80,7 @@ flutter build apk --release
 
 ## 📱 Download
 
-[![Download APK](https://custom-icon-badges.demolab.com/badge/-Download%20APK-F25278?style=for-the-badge&logo=download&logoColor=white&color=AB261D)](https://github.com/hhhh748/semo/releases)
+[![Download APK](https://custom-icon-badges.demolab.com/badge/-Download%20APK-F25278?style=for-the-badge&logo=download&logoColor=white&color=AB261D)](https://github.com/uiopooi/semo/releases)
 
 ## 🌐 Localization
 
@@ -148,7 +148,7 @@ To develop cutting-edge applications that bring entertainment and technology tog
 For support and inquiries:
 - 📧 Email: support@voxin.com
 - 🌐 Website: [voxin.com](https://voxin.com)
-- 📱 GitHub: [@hhhh748](https://github.com/hhhh748)
+- 📱 GitHub: [@uiopooi](https://github.com/uiopooi)
 
 ## 🙏 Acknowledgments
 

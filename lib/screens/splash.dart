@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:index/screens/landing.dart';
+import 'package:index/screens/welcome.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 class Splash extends StatefulWidget {
@@ -47,8 +47,8 @@ class _SplashState extends State<Splash> {
   }
 
   checkUserSession() {
-    // Always go to Landing page since we removed Google authentication
-    navigate(destination: Landing(onLanguageChange: widget.onLanguageChange));
+    // Navigate to Welcome screen for guest login
+    navigate(destination: WelcomeScreen(onLanguageChange: widget.onLanguageChange));
   }
 
   initRemoteConfig() async {

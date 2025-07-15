@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="appName">Semo</string>
+    <string name="app_name">Index</string>
+    <string name="app_description">Modern VOD Streaming App by Voxin</string>
 </resources>

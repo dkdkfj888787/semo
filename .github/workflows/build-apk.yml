@@ -1,0 +1,93 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Generate localization files
+      run: flutter gen-l10n
+      
+    - name: Analyze code
+      run: flutter analyze --no-fatal-infos
+      
+    - name: Run tests
+      run: flutter test
+      continue-on-error: true
+      
+    - name: Build APK (Debug)
+      run: flutter build apk --debug --split-per-abi
+      
+    - name: Build APK (Release)
+      run: flutter build apk --release --split-per-abi
+      
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk
+        path: build/app/outputs/flutter-apk/app-*-debug.apk
+        
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: build/app/outputs/flutter-apk/app-*-release.apk
+        
+    - name: Create Release
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ github.run_number }}
+        name: Index v${{ github.run_number }}
+        body: |
+          ## Index - Modern VOD Streaming App
+          
+          ### What's New
+          - Updated to latest Flutter version
+          - Improved performance and stability
+          - Enhanced UI/UX
+          - Full Arabic and English localization
+          - Guest login functionality
+          
+          ### Download
+          - **Release APK**: Optimized for production use
+          - **Debug APK**: For testing and development
+          
+          ### Company Information
+          **Developed by VOXIN**
+          - Founded: 2020
+          - Development Started: 2021
+          - Specialized in entertainment technology solutions
+          
+        files: |
+          build/app/outputs/flutter-apk/app-*-release.apk
+          build/app/outputs/flutter-apk/app-*-debug.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
